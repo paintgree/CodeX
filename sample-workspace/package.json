@@ -1,7 +1,0 @@
-{
-  "scripts": {
-    "test": "node src/test.js",
-    "build": "node src/index.js"
-  },
-  "dependencies": {}
-}
