@@ -1,7 +1,7 @@
 {
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "build": "tsc && vite build",
+    "build": "npm run build --workspace @agentforge/shared && tsc && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
