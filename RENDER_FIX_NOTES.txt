@@ -1,0 +1,22 @@
+Render fix v4.
+
+What was wrong:
+- Render used Node.js 24.14.1 by default.
+- The repo had ignoreDeprecations: "6.0" in tsconfig files.
+- The installed TypeScript version rejects that value, causing TS5103.
+
+I changed:
+- Removed ignoreDeprecations from all tsconfig files.
+- Kept modern moduleResolution values:
+  - apps/api uses NodeNext
+  - apps/web uses Bundler
+  - packages/shared uses Bundler
+- Added root package.json engines: node 20.x
+- Added .node-version with Node 20
+
+Render settings:
+- Root Directory: empty
+- Build Command: npm install && npm run build
+- Start Command for API service: npm run start --workspace apps/api
+
+For frontend, use Vercel if possible.

@@ -1,0 +1,12 @@
+import "dotenv/config";
+import express from "express"; import cors from "cors"; import fs from "node:fs/promises";
+import { ChatRequest, runAgent } from "./services/agent.js";
+import { analyzeRepo, listFiles, readWorkspaceFile, resolveWorkspace } from "./utils/workspace.js";
+const app = express(); app.use(cors()); app.use(express.json({ limit:"25mb" })); let workspaceRoot = resolveWorkspace();
+app.get("/api/health", (_req,res)=>res.json({ ok:true, workspaceRoot }));
+app.post("/api/workspace", async (req,res)=>{ try { const next = resolveWorkspace(String(req.body.path || "")); const stat = await fs.stat(next); if (!stat.isDirectory()) throw new Error("Path is not a directory."); workspaceRoot = next; res.json({ ok:true, workspaceRoot, analysis: await analyzeRepo(workspaceRoot) }); } catch(err) { res.status(400).json({ error: err instanceof Error ? err.message : "Invalid workspace path" }); } });
+app.get("/api/workspace", async (_req,res)=>res.json({ workspaceRoot, analysis: await analyzeRepo(workspaceRoot) }));
+app.get("/api/files", async (_req,res)=>res.json({ files: await listFiles(workspaceRoot) }));
+app.get("/api/file", async (req,res)=>{ try { const filePath = String(req.query.path || ""); const content = await readWorkspaceFile(workspaceRoot, filePath); res.json({ path:filePath, content }); } catch(err) { res.status(400).json({ error: err instanceof Error ? err.message : "Failed to read file" }); } });
+app.post("/api/chat", async (req,res)=>{ try { const parsed = ChatRequest.parse({ ...req.body, workspaceRoot }); res.json(await runAgent(parsed)); } catch(err) { res.status(400).json({ error: err instanceof Error ? err.message : "Chat failed" }); } });
+const port = Number(process.env.PORT || 8787); app.listen(port, ()=>{ console.log(`AgentForge Pro API running at http://localhost:${port}`); console.log(`Workspace: ${workspaceRoot}`); });

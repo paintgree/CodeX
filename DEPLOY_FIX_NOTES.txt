@@ -1,0 +1,16 @@
+TypeScript deploy fix applied.
+
+What was wrong:
+- TypeScript treated moduleResolution: "Node" as deprecated node10 behavior.
+- The deploy build failed before Vite could finish.
+
+I changed:
+- apps/web/tsconfig.json — changed moduleResolution to Bundler and added ignoreDeprecations.
+- packages/shared/tsconfig.json — changed moduleResolution to Bundler and added ignoreDeprecations.
+- apps/api/tsconfig.json — kept NodeNext resolution and added ignoreDeprecations.
+- apps/web/package.json — builds @agentforge/shared before the web app.
+
+Recommended build commands:
+- Root build: npm run build
+- Web only from repo root: npm run build --workspace apps/web
+- API only from repo root: npm run build --workspace apps/api
