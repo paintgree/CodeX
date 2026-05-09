@@ -1,0 +1,22 @@
+Frontend Render fix v5.
+
+What was wrong:
+- Render used yarn install; yarn build even though npm was intended.
+- Yarn workspaces require the root package.json to be private.
+- TypeScript could not understand import.meta.env because apps/web/src/vite-env.d.ts was missing.
+
+I changed:
+- Added apps/web/src/vite-env.d.ts with Vite client types.
+- Added private: true to root package.json.
+- Added render.yaml with correct API and frontend service settings.
+- Added a start script to apps/web for fallback preview use.
+
+For Render Static Site:
+- Root Directory: apps/web
+- Build Command: npm install && npm run build
+- Publish Directory: dist
+- Environment Variable: VITE_API_URL=https://codex-tgwr.onrender.com
+
+Important:
+If Render still shows build command as yarn install; yarn build, edit the Static Site settings and replace it with:
+npm install && npm run build

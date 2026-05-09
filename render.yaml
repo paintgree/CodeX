@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: codex-api
+    env: node
+    rootDir: apps/api
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: OPENAI_MODEL
+        value: gpt-4.1-mini
+      - key: OPENAI_API_KEY
+        sync: false
+
+  - type: static
+    name: codex-frontend
+    rootDir: apps/web
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://codex-tgwr.onrender.com
